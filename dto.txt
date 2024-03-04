@@ -1,0 +1,6 @@
+ResposeDto - transaction
+	private tId;
+	
+	accountId;
+
+	bALANCE;
