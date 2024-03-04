@@ -1,0 +1,86 @@
+package com.edureka.bankProject.service;
+
+import com.edureka.bankProject.config.TransactionType;
+import com.edureka.bankProject.model.Account;
+import com.edureka.bankProject.model.Transaction;
+import com.edureka.bankProject.repo.AccountRepo;
+import com.edureka.bankProject.repo.TransactionRepo;
+import org.hibernate.PropertyValueException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import javax.transaction.Transactional;
+
+@Service
+public class AccountService {
+
+    @Autowired
+    private AccountRepo accountRepo;
+
+    @Autowired
+    private TransactionRepo transactionRepo;
+    @Transactional(rollbackOn = PropertyValueException.class)
+    public void withdraw(Long accountId, Long amt){
+            Optional<Account> opAcc = accountRepo.findById(accountId);
+
+            if(opAcc.isPresent()){
+                Account account = opAcc.get();
+                Long newBalance = account.getBalance() - amt;
+                if(newBalance.compareTo(0L) < 0){
+                    throw new IllegalArgumentException("Insufficient Funds");
+                }
+                account.setBalance(newBalance);
+                accountRepo.save(account);
+                createTransaction(account,TransactionType.WITHDRAWAL,amt);
+
+            }else{
+                throw new IllegalArgumentException("Account not found");
+            }
+    }
+
+    @Transactional(rollbackOn = PropertyValueException.class)
+    public void deposit(Long accountId, Long amt){
+        Optional<Account> opAcc = accountRepo.findById(accountId);
+
+        if(opAcc.isPresent()){
+            Account account = opAcc.get();
+            Long newBalance = account.getBalance() + amt;
+            account.setBalance(newBalance);
+            accountRepo.save(account);
+            createTransaction(account,TransactionType.DEPOSIT,amt);
+        }else{
+            throw new IllegalArgumentException("Account not found");
+        }
+    }
+    //accId, transDate, description, cheque+depo, depo/withdraw
+    //accId - i can get
+    //transDate - currentTime from Front-end
+    //chequeNo+depo - add data to table already
+    //depo/withdraw - add a boolean or enum then add the amount to that column
+    //amount
+    public void createTransaction(Account account, TransactionType type, Long amt){
+
+        Transaction transaction = new Transaction();
+        transaction.setAccId(account.getAccId());
+        transaction.setDescription(type.getType());
+        if(type.getType().equalsIgnoreCase("withdraw")){
+            transaction.setWithdrawAmt(amt);
+        }else if(type.getType().equalsIgnoreCase("deposit")){
+            transaction.setDepositAmt(amt);
+        }
+        transaction.setTransDateTime(LocalDateTime.now());
+        transaction.setAvailBal(account.getBalance());
+        transactionRepo.save(transaction);
+
+
+    }
+
+    public List<Transaction> getAllTransactionsByAccountId(Long accountId){
+        return transactionRepo.findByAccId(accountId);
+//        return accountRepo.findTransactionsByAccountId(accountId);
+    }
+}

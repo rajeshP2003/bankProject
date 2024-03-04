@@ -1,0 +1,102 @@
+package com.edureka.bankProject.controller;
+
+import com.edureka.bankProject.model.Account;
+import com.edureka.bankProject.model.CreditCard;
+import com.edureka.bankProject.model.Transaction;
+import com.edureka.bankProject.repo.AccountRepo;
+import com.edureka.bankProject.repo.CreditCardRepo;
+import com.edureka.bankProject.service.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/accounts")
+public class AccountController {
+
+    @Autowired
+    private AccountRepo accountRepo;
+
+    @Autowired
+    private CreditCardRepo creditCardRepo;
+
+    @Autowired
+    private AccountService accountService;
+
+    @PostMapping("/create-account")
+    public ResponseEntity<Account> createAccount (@RequestBody Account account){
+
+        Account savedAccount = accountRepo.save(account);
+        System.out.println(savedAccount.toString());
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedAccount);
+    }
+
+    @GetMapping("/{accountId}")
+    public ResponseEntity<Optional<Account>> getAccountDetails (@PathVariable long accountId){
+
+        Optional<Account> acc = accountRepo.findById(accountId);
+        if(acc.isPresent()){
+            return ResponseEntity.status(HttpStatus.FOUND).body(acc);
+        }
+        throw new IllegalArgumentException("Account not found");
+    }
+
+
+    @PostMapping("/{accountId}/debitFrom")
+    public ResponseEntity<Map<String, Object>> debitFrom(@PathVariable long accountId, @RequestBody Map<String,Object> account){
+        Optional<Account> ourAcc = accountRepo.findById(accountId);
+        if (ourAcc.isPresent()){
+//            Long idTwo = (Long)account.get("accountid");
+//            Long amt = (Long) account.get("amount");
+
+            Long idTwo = new Long(account.get("accountid").toString()); // check for better way
+            Long amt = new Long(account.get("amount").toString());  // new Long() is deprecated
+
+            accountService.withdraw(idTwo,amt);
+            accountService.deposit(accountId,amt);
+        }else{
+            throw new IllegalArgumentException("Account not found");
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(account);
+
+    }
+    @PostMapping("/{accountId}/creditTo")
+    public ResponseEntity<Map<String, Object>> creditTo(@PathVariable long accountId, @RequestBody Map<String,Object> account){
+        Optional<Account> ourAcc = accountRepo.findById(accountId);
+        if (ourAcc.isPresent()){
+
+            Long idTwo = new Long(account.get("accountid").toString()); // check for better way
+            Long amt = new Long(account.get("amount").toString());  // new Long() is deprecated
+
+            accountService.withdraw(accountId,amt);
+            accountService.deposit(idTwo,amt);
+        }else{
+            throw new IllegalArgumentException("Account not found");
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(account);
+
+    }
+
+    @GetMapping("/{accountId}/getTransactions")
+    public ResponseEntity<List<Transaction>> getAllTransactionsByAccountId(@PathVariable Long accountId){
+        List<Transaction> transactions = accountService.getAllTransactionsByAccountId(accountId);
+        if(transactions.isEmpty()){
+            System.out.println("Transactions is empty");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.FOUND).body(transactions);
+    }
+
+//    @PostMapping("/authorize")
+//    public ResponseEntity<CreditCard> authorizeCreditCard(@RequestBody CreditCard creditCard){
+//        Optional<CreditCard> opCreditCard =
+//        return ResponseEntity.status(HttpStatus.OK).body();
+//    }
+
+
+}

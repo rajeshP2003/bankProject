@@ -1,0 +1,103 @@
+package com.edureka.bankProject.model;
+
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "transactions")
+public class Transaction {
+
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "trans_id")
+	private long transId;
+
+	private long accId;
+
+	@Column(name = "trans_date_time", nullable = false)
+	private LocalDateTime transDateTime;
+	private String description;
+	@Column(name = "cheq_no")
+	private Long chequeNo;
+	@Column(name = "with_amt")
+	private Long withdrawAmt;
+	@Column(name = "depo_amt")
+	private Long depositAmt;
+	@Column(name = "avail_bal", nullable = false)
+	private Long availBal;
+
+	public long getTransId() {
+		return transId;
+	}
+
+	public void setTransId(long transId) {
+		this.transId = transId;
+	}
+
+	public long getAccId() {
+		return accId;
+	}
+
+	public void setAccId(long accId) {
+		this.accId = accId;
+	}
+
+	public LocalDateTime getTransDateTime() {
+		return transDateTime;
+	}
+
+	public void setTransDateTime(LocalDateTime transDateTime) {
+		this.transDateTime = transDateTime;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Long getChequeNo() {
+		return chequeNo;
+	}
+
+	public void setChequeNo(Long chequeNo) {
+		this.chequeNo = chequeNo;
+	}
+
+	public Long getWithdrawAmt() {
+		return withdrawAmt;
+	}
+
+	public void setWithdrawAmt(Long withdrawAmt) {
+		this.withdrawAmt = withdrawAmt;
+	}
+
+	public Long getDepositAmt() {
+		return depositAmt;
+	}
+
+	public void setDepositAmt(Long depositAmt) {
+		this.depositAmt = depositAmt;
+	}
+
+	public Long getAvailBal() {
+		return availBal;
+	}
+
+	public void setAvailBal(Long availBal) {
+		this.availBal = availBal;
+	}
+
+}

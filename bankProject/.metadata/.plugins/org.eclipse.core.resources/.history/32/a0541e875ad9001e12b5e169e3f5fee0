@@ -1,0 +1,102 @@
+package com.edureka.bankProject.model;
+
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "account_details")
+public class Account {
+	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long accId;
+    private String name;
+    private LocalDateTime dob;
+    private String Address;
+    private String email;
+
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @Column(name = "trans_id")
+//    private Transaction transaction;
+
+//    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+//    private List<Transaction> transactions;
+    private Long balance;
+
+
+
+    public Account() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public long getAccId(){
+        return accId;
+    }
+
+    @Column(name = "acc_name", nullable = false)
+    public String getName() {
+        return name;
+    }
+
+    @Column(name = "dob", nullable = false)
+    public LocalDateTime getDob() {
+        return dob;
+    }
+
+    @Column(name = "address", nullable = false)
+    public String getAddress() {
+        return Address;
+    }
+
+    @Column(name = "email", nullable = false)
+    public String getEmail() {
+        return email;
+    }
+
+
+//    public Transaction getTransaction() {
+//        return transaction;
+//    }
+//    public List<Transaction> getTransactions() {
+//        return transactions;
+//    }
+    public Long getBalance() {
+        return balance;
+    }
+
+	public void setAccId(long accId) {
+		this.accId = accId;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setDob(LocalDateTime dob) {
+		this.dob = dob;
+	}
+
+	public void setAddress(String address) {
+		Address = address;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setBalance(Long balance) {
+		this.balance = balance;
+	}
+}

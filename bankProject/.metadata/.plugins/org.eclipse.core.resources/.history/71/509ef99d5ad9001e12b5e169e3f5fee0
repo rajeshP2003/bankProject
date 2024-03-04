@@ -1,0 +1,64 @@
+    package com.edureka.bankProject.controller;
+
+    import com.edureka.bankProject.model.User;
+    import com.edureka.bankProject.repo.UserRepo;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.stereotype.Controller;
+    import org.springframework.ui.Model;
+    import org.springframework.web.bind.annotation.*;
+
+    import java.util.Optional;
+
+    @Controller
+    public class LoginController {
+
+        @Autowired
+        private UserRepo userRepo;
+
+
+//        @GetMapping("/login")
+//        public String showLoginForm(Model model) {
+//            model.addAttribute("user", new User());
+//            System.out.println("In showLoginForm");
+//            return "login";
+//        }
+
+        @GetMapping("/home2")
+        public String getHome() {
+            return "home";
+        }
+
+        @GetMapping("/login")
+        public String getLogin() {
+            // Return the name of the JSP view that renders the login page
+            return "login";
+        }
+
+        @PostMapping("/login")
+        public ResponseEntity<String> checkLogin(@RequestBody User user){
+//        @PostMapping("/login")
+//        public ResponseEntity<String> checkLogin(@ModelAttribute("user") User user){
+
+            String userName = user.getUserName();
+
+            Optional<User> newUser = userRepo.findByUserName(userName);
+
+            if(newUser.isPresent()){
+                User storedUser = newUser.get();
+                if(user.getPassword().equals(storedUser.getPassword())){
+//                    return ResponseEntity.status(HttpStatus.CREATED).body("User Logged In Successfully");
+                    return new ResponseEntity<>("User logged in succesfully",HttpStatus.OK);
+                }else {
+//                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password incorrect");
+                    return new ResponseEntity<>("Incorrect Password",HttpStatus.UNAUTHORIZED);
+
+                }
+            }else {
+//                return new ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");            }
+                return new ResponseEntity<>("User not Found",HttpStatus.NOT_FOUND);
+
+            }
+    }
+    }
