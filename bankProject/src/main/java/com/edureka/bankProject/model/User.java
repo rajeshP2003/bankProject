@@ -1,7 +1,6 @@
 package com.edureka.bankProject.model;
 
 import jakarta.persistence.*;
-
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -13,7 +12,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class User {
 
-    private  long userId;
+    private long userId;
     private String userName;
     private String password;
 
